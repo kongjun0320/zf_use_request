@@ -50,6 +50,7 @@ function useRequestImplement(service, options = {}, plugins) {
     loading: fetchInstance.state.loading,
     data: fetchInstance.state.data,
     error: fetchInstance.state.error,
+    params: fetchInstance.state.params || [],
     run: useMemoizedFn(fetchInstance.run.bind(fetchInstance)),
     runAsync: useMemoizedFn(fetchInstance.runAsync.bind(fetchInstance)),
     refresh: useMemoizedFn(fetchInstance.refresh.bind(fetchInstance)),
