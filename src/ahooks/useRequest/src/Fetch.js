@@ -35,13 +35,27 @@ class Fetch {
     this.count += 1;
     const currentCount = this.count;
 
-    const { ...state } = this.runPluginHandler('onBefore', params);
+    const {
+      stopNow = false,
+      returnNow = false,
+      ...state
+    } = this.runPluginHandler('onBefore', params);
+
+    // stop request
+    if (stopNow) {
+      return new Promise(() => {});
+    }
 
     this.setState({
       loading: true,
       params,
       ...state,
     });
+
+    // return now
+    if (returnNow) {
+      return Promise.resolve(state.data);
+    }
 
     this.options.onBefore?.(params);
 

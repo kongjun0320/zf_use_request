@@ -1,3 +1,4 @@
+import useAutoRunPlugin from './plugins/useAutoRunPlugin';
 import useLoadingDelayPlugin from './plugins/useLoadingDelayPlugin';
 import usePollingPlugin from './plugins/usePollingPlugin';
 import useRequestImplement from './useRequestImplement';
@@ -7,6 +8,7 @@ function useRequest(service, options, plugins) {
     ...(plugins || []),
     useLoadingDelayPlugin,
     usePollingPlugin,
+    useAutoRunPlugin,
   ]);
 }
 
