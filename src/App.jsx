@@ -12,9 +12,9 @@ function getName() {
 function updateName(newName) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // resolve(newName);
-      reject('error');
-    }, 1000);
+      resolve(newName);
+      // reject('error');
+    }, 3000);
   });
 }
 
@@ -22,7 +22,7 @@ const App = () => {
   const [value, setValue] = useState('');
   const lastRef = useRef();
   const { data: name, mutate } = useRequest(getName, {});
-  const { run, loading } = useRequest(updateName, {
+  const { run, loading, cancel } = useRequest(updateName, {
     manual: true,
     onSuccess(response, params) {
       console.log('更新用户名成功 >>> ', response, params);
@@ -30,6 +30,10 @@ const App = () => {
     },
     onError(error, params) {
       console.log('更新用户名失败 >>> ', error, params);
+      mutate(lastRef.current);
+    },
+    onCancel() {
+      console.log('取消更新用户名');
       mutate(lastRef.current);
     },
   });
@@ -49,6 +53,14 @@ const App = () => {
         }}
       >
         {loading ? '更新中' : '更新'}
+      </button>
+      <button
+        onClick={() => {
+          setValue('');
+          cancel();
+        }}
+      >
+        取消
       </button>
       {name && <div>用户名：{name}</div>}
     </>

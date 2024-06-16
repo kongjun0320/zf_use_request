@@ -4,6 +4,7 @@ class Fetch {
   constructor(serviceRef, options, subscribe) {
     this.serviceRef = serviceRef;
     this.subscribe = subscribe;
+    this.count = 0;
 
     this.state = {
       loading: !options.manual,
@@ -30,6 +31,9 @@ class Fetch {
   }
 
   async runAsync(...params) {
+    this.count += 1;
+    const currentCount = this.count;
+
     this.setState({
       loading: true,
       params,
@@ -39,6 +43,12 @@ class Fetch {
 
     try {
       const res = await this.serviceRef.current(...params);
+      // 被取消掉了、或者是又发生了一次请求
+      if (currentCount !== this.count) {
+        // prevent run.then when request is canceled
+        return new Promise(() => {});
+      }
+
       this.setState({
         data: res,
         loading: false,
@@ -47,6 +57,11 @@ class Fetch {
       this.options.onSuccess?.(res, params);
       this.options.onFinally?.(params, res, undefined);
     } catch (error) {
+      if (currentCount !== this.count) {
+        // prevent run.then when request is canceled
+        return new Promise(() => {});
+      }
+
       this.setState({
         loading: false,
         error,
@@ -59,7 +74,15 @@ class Fetch {
     }
   }
 
-  cancel() {}
+  cancel() {
+    this.count += 1;
+
+    this.setState({
+      loading: false,
+    });
+
+    this.options?.onCancel();
+  }
 
   refresh() {
     this.run(...(this.state.params || []));

@@ -43,6 +43,7 @@ function useRequestImplement(service, options = {}) {
     refresh: useMemoizedFn(fetchInstance.refresh.bind(fetchInstance)),
     refreshAsync: useMemoizedFn(fetchInstance.refreshAsync.bind(fetchInstance)),
     mutate: useMemoizedFn(fetchInstance.mutate.bind(fetchInstance)),
+    cancel: useMemoizedFn(fetchInstance.cancel.bind(fetchInstance)),
   };
 }
 
