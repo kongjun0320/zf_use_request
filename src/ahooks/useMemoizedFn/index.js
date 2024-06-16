@@ -9,7 +9,7 @@ function useMemoizedFn(fn) {
   }
 
   const fnRef = useRef(fn);
-
+  console.log('1 >>> ');
   fnRef.current = useMemo(() => fn, [fn]);
 
   const memoizedFn = useRef();
