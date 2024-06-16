@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import { useRequest } from './ahooks';
 
-function getName(count) {
-  console.log('count >>> ', count);
+let count = 0;
+function getName() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve('ai_cherish ' + count);
+      resolve('ai_cherish ' + count++);
     }, 1000);
   });
 }
@@ -20,23 +20,13 @@ function updateName(newName) {
 }
 
 const App = () => {
-  const [count, setCount] = useState(0);
-  const {
-    data: name,
-    loading,
-    run,
-  } = useRequest(getName, {
-    defaultParams: [count],
-    refreshDeps: [count],
-    refreshDepsAction: () => {
-      run(count);
-    },
+  const { data: name, loading } = useRequest(getName, {
+    refreshOnWindowFocus: true,
+    // focusTimespan: 1000,
   });
 
   return (
     <>
-      {/* <button onClick={() => run(count)}>run</button> */}
-      <button onClick={() => setCount(count + 1)}>Add Count {count}</button>
       <div>{loading ? '加载中...' : name}</div>
     </>
   );
