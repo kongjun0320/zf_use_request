@@ -1,52 +1,56 @@
+import { useRef, useState } from 'react';
 import { useRequest } from './ahooks';
 
-function getName(prefix) {
+function getName() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve(prefix + ' ai_cherish');
-      // reject(new Error('error'));
+      resolve('ai_cherish');
+    }, 1000);
+  });
+}
+
+function updateName(newName) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // resolve(newName);
+      reject('error');
     }, 1000);
   });
 }
 
 const App = () => {
-  const { data, loading, error, run, refresh } = useRequest(getName, {
-    // manual: true,
-    defaultParams: ['Kong'],
-    onBefore() {
-      console.log('onBefore >>> ');
+  const [value, setValue] = useState('');
+  const lastRef = useRef();
+  const { data: name, mutate } = useRequest(getName, {});
+  const { run, loading } = useRequest(updateName, {
+    manual: true,
+    onSuccess(response, params) {
+      console.log('更新用户名成功 >>> ', response, params);
+      setValue('');
     },
-    onSuccess(response) {
-      console.log('onSuccess response>>> ', response);
-    },
-    onError(error) {
-      console.log('error >>> ', error);
-    },
-    onFinally() {
-      console.log('onFinally >>> ');
+    onError(error, params) {
+      console.log('更新用户名失败 >>> ', error, params);
+      mutate(lastRef.current);
     },
   });
 
-  if (loading) {
-    return <div>加载中...</div>;
-  }
-
-  if (error) {
-    return <div>{error.message}</div>;
-  }
-
   return (
     <>
-      <button disabled={loading} onClick={() => run()}>
-        {loading ? '获取中' : 'run'}
+      <input
+        type="text"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+      />
+      <button
+        onClick={() => {
+          lastRef.current = name;
+          mutate(value);
+          run(value);
+        }}
+      >
+        {loading ? '更新中' : '更新'}
       </button>
-      <button disabled={loading} onClick={() => refresh()}>
-        {loading ? '获取中' : 'refresh'}
-      </button>
-      {/* <button disabled={loading} onClick={() => runAsync('孔')}>
-        {loading ? '获取中' : 'runAsync'}
-      </button> */}
-      <div>{data}</div>
+      {name && <div>用户名：{name}</div>}
     </>
   );
 };

@@ -1,3 +1,5 @@
+import { isFunction } from '../../utils';
+
 class Fetch {
   constructor(serviceRef, options, subscribe) {
     this.serviceRef = serviceRef;
@@ -65,6 +67,14 @@ class Fetch {
 
   refreshAsync() {
     return this.runAsync(...(this.state.params || []));
+  }
+
+  mutate(data) {
+    const targetData = isFunction(data) ? data(this.state.data) : data;
+    // this.runPluginHandler('onMutate', targetData);
+    this.setState({
+      data: targetData,
+    });
   }
 }
 
