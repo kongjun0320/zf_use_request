@@ -24,6 +24,7 @@ const App = () => {
   const { data: name, mutate } = useRequest(getName, { name: 'getName' });
   const { run, loading, cancel } = useRequest(updateName, {
     name: 'updateName',
+    loadingDelay: 2000,
     manual: true,
     onSuccess(response, params) {
       console.log('更新用户名成功 >>> ', response, params);
@@ -53,7 +54,7 @@ const App = () => {
           run(value);
         }}
       >
-        {loading ? '更新中' : '更新'}
+        {loading ? '更新中...' : '更新'}
       </button>
       <button
         onClick={() => {
