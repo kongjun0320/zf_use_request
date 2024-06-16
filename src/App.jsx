@@ -4,7 +4,8 @@ import { useRequest } from './ahooks';
 function getName(suffix = '') {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve('ai_cherish ' + suffix);
+      // resolve('ai_cherish ' + suffix);
+      reject('some error');
     }, 500);
   });
 }
@@ -24,7 +25,8 @@ const App = () => {
     loading,
     run,
   } = useRequest(getName, {
-    throttleWait: 1000,
+    retryCount: 3,
+    retryInterval: 1000,
   });
 
   return (

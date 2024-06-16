@@ -3,6 +3,7 @@ import useDebouncePlugin from './plugins/useDebouncePlugin';
 import useLoadingDelayPlugin from './plugins/useLoadingDelayPlugin';
 import usePollingPlugin from './plugins/usePollingPlugin';
 import useRefreshOnWindowFocusPlugin from './plugins/useRefreshOnWindowFocusPlugin';
+import useRetryPlugin from './plugins/useRetryPlugin';
 import useThrottlePlugin from './plugins/useThrottlePlugin';
 import useRequestImplement from './useRequestImplement';
 
@@ -15,6 +16,7 @@ function useRequest(service, options, plugins) {
     useRefreshOnWindowFocusPlugin,
     useDebouncePlugin,
     useThrottlePlugin,
+    useRetryPlugin,
   ]);
 }
 
