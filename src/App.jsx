@@ -1,61 +1,54 @@
-import { useMemoizedFn } from './ahooks';
-import React, { useCallback, useRef, useState } from 'react';
+import { useRequest } from './ahooks';
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default () => {
-  console.log('app render >>> ');
-  const [count, setCount] = useState(0);
-
-  const callbackFn = useCallback(() => {
-    alert(`Current count is ${count}`);
-  }, [count]);
-
-  const memoizedFn = useMemoizedFn(() => {
-    alert(`Current count is ${count}`);
+function getName(prefix) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(prefix + ' ai_cherish');
+      // reject(new Error('error'));
+    }, 1000);
   });
+}
+
+const App = () => {
+  const { data, loading, error, run, refresh } = useRequest(getName, {
+    // manual: true,
+    defaultParams: ['Kong'],
+    onBefore() {
+      console.log('onBefore >>> ');
+    },
+    onSuccess(response) {
+      console.log('onSuccess response>>> ', response);
+    },
+    onError(error) {
+      console.log('error >>> ', error);
+    },
+    onFinally() {
+      console.log('onFinally >>> ');
+    },
+  });
+
+  if (loading) {
+    return <div>加载中...</div>;
+  }
+
+  if (error) {
+    return <div>{error.message}</div>;
+  }
 
   return (
     <>
-      <p>count: {count}</p>
-      <button
-        type="button"
-        onClick={() => {
-          setCount((c) => c + 1);
-        }}
-      >
-        Add Count
+      <button disabled={loading} onClick={() => run()}>
+        {loading ? '获取中' : 'run'}
       </button>
-
-      <p>
-        You can click the button to see the number of sub-component renderings
-      </p>
-
-      <div style={{ marginTop: 32 }}>
-        <h3>Component with useCallback function:</h3>
-        {/* use callback function, ExpensiveTree component will re-render on state change */}
-        <ExpensiveTree showCount={callbackFn} />
-      </div>
-
-      <div style={{ marginTop: 32 }}>
-        <h3>Component with useMemoizedFn function:</h3>
-        {/* use memoized function, ExpensiveTree component will only render once */}
-        <ExpensiveTree showCount={memoizedFn} />
-      </div>
+      <button disabled={loading} onClick={() => refresh()}>
+        {loading ? '获取中' : 'refresh'}
+      </button>
+      {/* <button disabled={loading} onClick={() => runAsync('孔')}>
+        {loading ? '获取中' : 'runAsync'}
+      </button> */}
+      <div>{data}</div>
     </>
   );
 };
 
-// some expensive component with React.memo
-const ExpensiveTree = React.memo(({ showCount }) => {
-  const renderCountRef = useRef(0);
-  renderCountRef.current += 1;
-
-  return (
-    <div>
-      <p>Render Count: {renderCountRef.current}</p>
-      <button type="button" onClick={showCount}>
-        showParentCount
-      </button>
-    </div>
-  );
-});
+export default App;
