@@ -1,12 +1,11 @@
 import { useRef, useState } from 'react';
 import { useRequest } from './ahooks';
 
-let count = 0;
-function getName() {
+function getName(suffix = '') {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve('ai_cherish ' + count++);
-    }, 1000);
+      resolve('ai_cherish ' + suffix);
+    }, 500);
   });
 }
 
@@ -20,13 +19,17 @@ function updateName(newName) {
 }
 
 const App = () => {
-  const { data: name, loading } = useRequest(getName, {
-    refreshOnWindowFocus: true,
-    // focusTimespan: 1000,
+  const {
+    data: name,
+    loading,
+    run,
+  } = useRequest(getName, {
+    throttleWait: 1000,
   });
 
   return (
     <>
+      <input type="text" onChange={(event) => run(event.target.value)} />
       <div>{loading ? '加载中...' : name}</div>
     </>
   );

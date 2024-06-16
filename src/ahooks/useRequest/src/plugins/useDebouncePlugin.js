@@ -27,6 +27,7 @@ function useDebouncePlugin(
 
       debouncedRef.current = debounce(
         (callback) => {
+          console.log('callback >>> ', callback);
           callback();
         },
         debounceWait,
@@ -51,6 +52,18 @@ function useDebouncePlugin(
       };
     }
   }, [debounceWait, options]);
+
+  function _debounce(fn, wait) {
+    let timer;
+    return function (...args) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        fn(...args);
+      }, wait);
+    };
+  }
 
   if (!debounceWait) {
     return {};
