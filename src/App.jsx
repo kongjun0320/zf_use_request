@@ -1,38 +1,43 @@
 import { useRef, useState } from 'react';
 import { useRequest } from './ahooks';
 
-function getName(suffix = '') {
+let count = 0;
+function getName() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // resolve('ai_cherish ' + suffix);
-      reject('some error');
+      resolve({
+        data: 'aic' + count++,
+        time: new Date().toLocaleTimeString(),
+      });
+      // reject('some error');
     }, 500);
   });
 }
 
-function updateName(newName) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(Date.now());
-      // reject('error');
-    }, 2000);
-  });
-}
-
-const App = () => {
-  const {
-    data: name,
-    loading,
-    run,
-  } = useRequest(getName, {
-    retryCount: 3,
-    retryInterval: 1000,
+function User() {
+  const { data, loading } = useRequest(getName, {
+    cacheKey: 'cacheKey',
+    staleTime: 5000,
   });
 
   return (
     <>
-      <input type="text" onChange={(event) => run(event.target.value)} />
-      <div>{loading ? '加载中...' : name}</div>
+      <div>{loading ? '加载中...' : '加载完成'}</div>
+      <p>最后请求的时候：{data?.time}</p>
+      <p>data：{data?.data}</p>
+    </>
+  );
+}
+
+const App = () => {
+  const [visible, setVisible] = useState(true);
+
+  return (
+    <>
+      <button onClick={() => setVisible(!visible)}>
+        {visible ? 'hidden' : 'show'}
+      </button>
+      {visible && <User />}
     </>
   );
 };

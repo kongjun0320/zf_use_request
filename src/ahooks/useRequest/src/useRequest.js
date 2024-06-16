@@ -1,4 +1,5 @@
 import useAutoRunPlugin from './plugins/useAutoRunPlugin';
+import useCachePlugin from './plugins/useCachePlugin';
 import useDebouncePlugin from './plugins/useDebouncePlugin';
 import useLoadingDelayPlugin from './plugins/useLoadingDelayPlugin';
 import usePollingPlugin from './plugins/usePollingPlugin';
@@ -17,6 +18,7 @@ function useRequest(service, options, plugins) {
     useDebouncePlugin,
     useThrottlePlugin,
     useRetryPlugin,
+    useCachePlugin,
   ]);
 }
 
