@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react';
 import { useRequest } from './ahooks';
 
+let count = 1;
 function getName() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve('ai_cherish');
+      resolve('ai_cherish ' + count++);
     }, 1000);
   });
 }
@@ -12,19 +13,23 @@ function getName() {
 function updateName(newName) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve(newName);
+      resolve(Date.now());
       // reject('error');
-    }, 3000);
+    }, 2000);
   });
 }
 
 const App = () => {
   const [value, setValue] = useState('');
   const lastRef = useRef();
-  const { data: name, mutate } = useRequest(getName, { name: 'getName' });
+  const { data: name, mutate } = useRequest(getName, {
+    name: 'getName',
+    pollingInterval: 1000,
+  });
   const { run, loading, cancel } = useRequest(updateName, {
     name: 'updateName',
-    loadingDelay: 2000,
+    // loadingDelay: 2000,
+    // pollingInterval: 1000,
     manual: true,
     onSuccess(response, params) {
       console.log('更新用户名成功 >>> ', response, params);
