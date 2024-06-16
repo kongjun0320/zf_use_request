@@ -21,8 +21,9 @@ function updateName(newName) {
 const App = () => {
   const [value, setValue] = useState('');
   const lastRef = useRef();
-  const { data: name, mutate } = useRequest(getName, {});
+  const { data: name, mutate } = useRequest(getName, { name: 'getName' });
   const { run, loading, cancel } = useRequest(updateName, {
+    name: 'updateName',
     manual: true,
     onSuccess(response, params) {
       console.log('更新用户名成功 >>> ', response, params);

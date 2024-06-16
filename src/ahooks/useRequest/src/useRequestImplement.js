@@ -6,7 +6,7 @@ import useUnmount from '../../useUnmount';
 import useUpdate from '../../useUpdate';
 import Fetch from './Fetch';
 
-function useRequestImplement(service, options = {}) {
+function useRequestImplement(service, options = {}, plugins) {
   const { manual = false, ...rest } = options;
 
   const fetchOptions = {
@@ -18,10 +18,22 @@ function useRequestImplement(service, options = {}) {
   const update = useUpdate();
 
   const fetchInstance = useCreation(() => {
-    return new Fetch(serviceRef, fetchOptions, update);
+    const initState = plugins
+      .map((p) => p?.onInit?.(fetchOptions))
+      .filter(Boolean);
+
+    return new Fetch(
+      serviceRef,
+      fetchOptions,
+      update,
+      Object.assign({}, ...initState)
+    );
   }, []);
 
   fetchInstance.options = fetchOptions;
+  fetchInstance.pluginImpls = plugins.map((p) =>
+    p(fetchInstance, fetchOptions)
+  );
 
   useMount(() => {
     if (!manual) {
